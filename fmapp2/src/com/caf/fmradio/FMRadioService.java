@@ -42,6 +42,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ServiceInfo;
 import android.app.IntentService;
 import android.os.UserHandle;
 import android.content.BroadcastReceiver;
@@ -749,7 +750,7 @@ public class FMRadioService extends Service
              iFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
              iFilter.addAction(Intent.ACTION_MEDIA_EJECT);
              iFilter.addDataScheme("file");
-             registerReceiver(mSdcardUnmountReceiver, iFilter);
+             registerReceiver(mSdcardUnmountReceiver, iFilter, Context.RECEIVER_EXPORTED);
          }
      }
 
@@ -777,7 +778,7 @@ public class FMRadioService extends Service
            };
            IntentFilter iFilter = new IntentFilter();
            iFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-           registerReceiver(mAirplaneModeChanged, iFilter);
+           registerReceiver(mAirplaneModeChanged, iFilter, Context.RECEIVER_EXPORTED);
        }
    }
 
@@ -810,7 +811,7 @@ public class FMRadioService extends Service
             };
             IntentFilter iFilter = new IntentFilter();
             iFilter.addAction(Intent.ACTION_USER_SWITCHED);
-            registerReceiver(mRegisterUserSwitched, iFilter);
+            registerReceiver(mRegisterUserSwitched, iFilter, Context.RECEIVER_EXPORTED);
        }
    }
 
@@ -911,7 +912,7 @@ public class FMRadioService extends Service
             iFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
             iFilter.addAction(BluetoothA2dp.ACTION_ACTIVE_DEVICE_CHANGED);
             iFilter.addCategory(Intent.CATEGORY_DEFAULT);
-            registerReceiver(mHeadsetReceiver, iFilter);
+            registerReceiver(mHeadsetReceiver, iFilter, Context.RECEIVER_EXPORTED);
         }
     }
 
@@ -933,7 +934,7 @@ public class FMRadioService extends Service
                 }
             };
             IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-            registerReceiver(mAudioBecomeNoisyListener, intentFilter);
+            registerReceiver(mAudioBecomeNoisyListener, intentFilter, Context.RECEIVER_EXPORTED);
         }
     }
 
@@ -964,7 +965,7 @@ public class FMRadioService extends Service
             };
             IntentFilter commandFilter = new IntentFilter();
             commandFilter.addAction("com.android.music.musicservicecommand");
-            registerReceiver(mMusicCommandListener, commandFilter);
+            registerReceiver(mMusicCommandListener, commandFilter, Context.RECEIVER_EXPORTED);
         }
     }
     public void registerSleepExpired() {
@@ -978,7 +979,7 @@ public class FMRadioService extends Service
                 }
             };
             IntentFilter intentFilter = new IntentFilter(SLEEP_EXPIRED_ACTION);
-            registerReceiver(mSleepExpiredListener, intentFilter);
+            registerReceiver(mSleepExpiredListener, intentFilter, Context.RECEIVER_EXPORTED);
         }
     }
     public void registerRecordTimeout() {
@@ -992,7 +993,7 @@ public class FMRadioService extends Service
                 }
             };
             IntentFilter intentFilter = new IntentFilter(RECORD_EXPIRED_ACTION);
-            registerReceiver(mRecordTimeoutListener, intentFilter);
+            registerReceiver(mRecordTimeoutListener, intentFilter, Context.RECEIVER_EXPORTED);
         }
     }
     public void registerDelayedServiceStop() {
@@ -1009,7 +1010,7 @@ public class FMRadioService extends Service
                 }
             };
             IntentFilter intentFilter = new IntentFilter(SERVICE_DELAYED_STOP_ACTION);
-            registerReceiver(mDelayedServiceStopListener, intentFilter);
+            registerReceiver(mDelayedServiceStopListener, intentFilter, Context.RECEIVER_EXPORTED);
         }
     }
 
@@ -1971,7 +1972,7 @@ public class FMRadioService extends Service
             IntentFilter iFilter = new IntentFilter();
             iFilter.addAction(Intent.ACTION_SCREEN_ON);
             iFilter.addAction(Intent.ACTION_SCREEN_OFF);
-            registerReceiver(mScreenOnOffReceiver, iFilter);
+            registerReceiver(mScreenOnOffReceiver, iFilter, Context.RECEIVER_EXPORTED);
         }
     }
 
@@ -2018,7 +2019,8 @@ public class FMRadioService extends Service
             .setOngoing(true)
             .build();
 
-          startForeground(FMRADIOSERVICE_STATUS, notification);
+          startForeground(FMRADIOSERVICE_STATUS, notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
           mFMOn = true;
       }
    }
@@ -2042,7 +2044,7 @@ public class FMRadioService extends Service
       mDelayedStopHandler.removeCallbacksAndMessages(null);
       cancelAlarms();
       setAlarmDelayedServiceStop();
-      stopForeground(true);
+      stopForeground(Service.STOP_FOREGROUND_REMOVE);
    }
 
    /** Read's the internal Antenna available state from the FM
